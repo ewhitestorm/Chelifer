@@ -3,16 +3,36 @@
 <head>
     <title>Chelifer</title>
     <meta charset="utf-8" />
-    <meta name = "viewport" content = "width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/static/css/styles_throbber.css">
 </head>
 <body>
-    <h2>Форма ввода</h2>
-    <form action="city" method="post">
-        <p>
-            Название города:<br>
-            <input name="city" />
-        </p>
-        <input type="submit" value="Send" />
-    </form>
+    <div id="page">
+        <form id="realestate-form" action="realestate" method="post">
+            <h2>Input form</h2>
+            <p>
+                City name:<br>
+                <input name="city" />
+            </p>
+            <button type="submit" value="Send">Go</button>
+        </form>
+    </div>
+    <div class="pthrobber" id="throbber" style="display: none;">
+        <div class="container">
+            <div class="ball blue"></div>
+            <div class="ball yellow"></div>
+            <div class="ball red"></div>
+        </div>
+    </div>
+    <div id="result">
+        <div id="result-location"></div>
+        <div id="result-city"></div>
+        <div id="result-rubric"></div>
+        <div id="result-num"></div>
+        <div id="result-error"></div>
+        
+        <p>Return to <a href="/">Homepage</a></p>
+    </div>
+    <script src="/static/js/script.js"></script>
 </body>
 </html>
