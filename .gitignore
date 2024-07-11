@@ -1,0 +1,3 @@
+echo "app/logs/" >> .gitignore
+
+app/logic/
