@@ -1,3 +1,16 @@
-echo "app/logs/" >> .gitignore
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
 
+# Environments
+.venv
+.vscode
+
+# FastAPI stuff:
+app/logs/
+
+# Sistem stuff:
+app/atributs/
 app/logic/
+
+
