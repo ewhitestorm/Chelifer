@@ -1,10 +1,10 @@
 # Byte-compiled / optimized / DLL files
-__pycache__/
+app/__pycache__/
 *.py[cod]
 
 # Environments
-.venv
-.vscode
+.venv/
+.vscode/
 
 # FastAPI stuff:
 app/logs/
