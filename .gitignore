@@ -8,6 +8,7 @@ app/__pycache__/
 
 # FastAPI stuff:
 app/logs/
+requirements.txt
 
 # Sistem stuff:
 app/atributs/
