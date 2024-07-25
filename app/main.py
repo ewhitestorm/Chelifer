@@ -5,9 +5,12 @@ from pydantic import BaseModel, Field
 from typing import Union
 from logic.translation import City
 from logic.constructor import Constructor
+from logic.positioning import Data
 from fastapi.staticfiles import StaticFiles
 from fastapi.encoders import jsonable_encoder
 from fastapi.templating import Jinja2Templates
+import asyncio
+
 
 
 class ItemIn(BaseModel):
@@ -28,6 +31,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 post_form_result = {}
+counter = int()
 
 
 @app.get("/")
@@ -56,10 +60,16 @@ async def form_options(data: ItemIn, request: Request):
 
 @app.post("/realestate/{city_id}")
 async def post_form(city_id: str, data: ItemIn):
+    global counter
     post_form_result = {}
+    
     item = ItemIn(city=data.city, global_city_id=city_id)
     item_dict = item.model_dump()
     post_form_result = Constructor.info_about_city(item_dict['global_city_id'], item_dict['city'])
+    
+    counter_res = await Data.func_counter()
+    asyncio.create_task(Data.log_data(counter_res, post_form_result))
+    
     return post_form_result
 
 
