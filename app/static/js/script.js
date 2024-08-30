@@ -20,16 +20,18 @@ function initFormSubmission() {
         throbber.style.display = 'block';
 
         const city = document.querySelector('input[name="city"]').value;
+        const csrfToken = document.querySelector('input[name="csrf_token"]').value;
 
         try{
             const response = await fetch('/realestate', {
                 method: 'POST',
                 headers: {
                     "Accept": "application/json",
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": csrfToken
                 },
                 body: JSON.stringify({ 
-                    city: city 
+                    city: city
                 }),
             });
 
@@ -38,21 +40,23 @@ function initFormSubmission() {
             if (document.mozHidden !== undefined) {
                 document.mozHidden = false;
             }
-            
+
             if (response.ok){
                 const data = await response.json();
-
+            
                 window.history.pushState({}, null, response.url);
-
+            
                 result.style.display = 'block';
                 
                 result_city.textContent = data.city;
                 result_rubric.textContent = data.rubric;
                 result_num.textContent = data.num;
                 result_error.textContent = data.error;
-
+            
             } else if (response.status === 500) {
-                window.location.href = '/error';
+                window.location.href = "/error?from_js=true";
+            } else if (response.status === 403) { 
+                window.location.href = "/error_csrf?from_js=true";
             }
             
         } catch (err) {

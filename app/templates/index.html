@@ -10,6 +10,7 @@
     <div id="page">
         <form id="realestate-form" action="realestate" method="post">
             <h2>Input form</h2>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
             <p>
                 City name:<br>
                 <input name="city" />
