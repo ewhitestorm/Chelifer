@@ -1,3 +1,4 @@
+import os
 import asyncio
 import secrets
 from fastapi import FastAPI, Request
@@ -10,6 +11,7 @@ from typing import Union
 from starlette.middleware.sessions import SessionMiddleware
 from os import environ
 from dotenv import load_dotenv
+from itsdangerous import URLSafeTimedSerializer
 from logic.translation import City
 from logic.constructor import Constructor
 from logic.positioning import Data
@@ -29,11 +31,11 @@ class ItemOut(BaseModel):
 
 
 load_dotenv()
+secret_key = os.environ.get("SECRET_KEY")
 
 app = FastAPI()
 
 app.session_cookie_name = "session"
-secret_key = environ.get("SECRET_KEY")
 app.add_middleware(SessionMiddleware, secret_key=secret_key)
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -44,10 +46,17 @@ counter = int()
 error_displayed = bool() 
 
 
+def generate_csrf_token(secret_key):
+    serializer = URLSafeTimedSerializer(secret_key)
+    token = secrets.token_urlsafe(32)
+    main_csrf_token = serializer.dumps(token)
+    return main_csrf_token
+
+
 @app.get("/", response_class=HTMLResponse)
 async def root(request: Request):
     if "csrf_token":
-        request.session["csrf_token"] = secrets.token_urlsafe(32)
+        request.session["csrf_token"] = generate_csrf_token(secret_key)
         csrf_token = request.session["csrf_token"]
     return templates.TemplateResponse("index.html", {"request": request, "csrf_token": csrf_token})
 
@@ -96,6 +105,7 @@ async def exem_error_page(request: Request):
     if error_displayed == True:
         error_displayed = False
         return templates.TemplateResponse("error_page.html", {"request": request})
+    
     else:
         return templates.TemplateResponse("error_404.html", {"request": request})
 
@@ -107,6 +117,7 @@ async def exem_error_csrf(request: Request):
     if error_displayed == True:
         error_displayed = False
         return templates.TemplateResponse("error_csrf.html", {"request": request})
+    
     else:
         return templates.TemplateResponse("error_404.html", {"request": request})
 
