@@ -9,7 +9,6 @@ from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field
 from typing import Union
 from starlette.middleware.sessions import SessionMiddleware
-from os import environ
 from dotenv import load_dotenv
 from itsdangerous import URLSafeTimedSerializer
 from logic.translation import City
