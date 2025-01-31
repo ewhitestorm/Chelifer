@@ -72,13 +72,19 @@ async def form_options(data: ItemIn, request: Request):
     if not csrf_token or csrf_token != request.session.get("csrf_token"):
         return RedirectResponse(url="/error_csrf", status_code=403)
     
-    city_name = City.translate_city(data.city)
+    exam_city = await Data.detective(data.city)
+    
+    if exam_city == None:
+        city_name = City.translate_city(data.city)
+        
+    else:
+        city_name = exam_city
+
     return RedirectResponse(url=f"realestate/{city_name}")
 
 
 @app.post("/realestate/{city_id}")
 async def post_form(city_id: str, data: ItemIn, request: Request):
-    global counter
     post_form_result = {}
 
     csrf_token = request.headers.get("X-CSRFToken")
@@ -91,10 +97,19 @@ async def post_form(city_id: str, data: ItemIn, request: Request):
     post_form_result = Constructor.info_about_city(item_dict['global_city_id'], item_dict['city'])
     
     counter_res = await Data.func_counter()
-    asyncio.create_task(Data.log_data(counter_res, post_form_result))
-    
-    request.session.clear()
-    return post_form_result
+
+    log_task = asyncio.create_task(Data.log_data(counter_res, post_form_result))
+
+    try:
+        await asyncio.gather(log_task)
+        asyncio.create_task(Data.remember_city(item_dict['global_city_id'], item_dict['city']))
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+    finally:
+        request.session.clear()
+        return post_form_result
     
 
 @app.get("/error_page")
@@ -163,4 +178,4 @@ async def check_result():
 
     except Exception as e:
         return JSONResponse(content={"error": str(e)}, status_code=500)
-        
+    
